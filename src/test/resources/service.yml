@@ -1,8 +1,0 @@
----
-name: omegawiki
-endpointUrl: https://omegawiki.org/api.php
-driver: omegawiki
----
-name: Glosbe API
-endpointUrl: https://glosbe.com/gapi/
-driver: glosbe

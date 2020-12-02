@@ -1,0 +1,199 @@
+{
+  "id": "ace",
+  "metadata": {
+    "operation": "translations",
+    "provider": "Oxford University Press",
+    "schema": "RetrieveTranslations"
+  },
+  "results": [
+    {
+      "id": "ace",
+      "language": "en",
+      "lexicalEntries": [
+        {
+          "entries": [
+            {
+              "senses": [
+                {
+                  "id": "b-en-es0000347.002",
+                  "translations": [
+                    {
+                      "grammaticalFeatures": [
+                        {
+                          "id": "masculine",
+                          "text": "Masculine",
+                          "type": "Gender"
+                        }
+                      ],
+                      "language": "es",
+                      "text": "as",
+                      "type": "direct"
+                    }
+                  ]
+                },
+                {
+                  "id": "b-en-es0000347.003",
+                  "translations": [
+                    {
+                      "grammaticalFeatures": [
+                        {
+                          "id": "masculine",
+                          "text": "Masculine",
+                          "type": "Gender"
+                        }
+                      ],
+                      "language": "es",
+                      "text": "ace",
+                      "type": "direct"
+                    }
+                  ]
+                },
+                {
+                  "id": "b-en-es0000347.004",
+                  "translations": [
+                    {
+                      "grammaticalFeatures": [
+                        {
+                          "id": "masculine",
+                          "text": "Masculine",
+                          "type": "Gender"
+                        }
+                      ],
+                      "language": "es",
+                      "text": "as",
+                      "type": "direct"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "language": "en",
+          "lexicalCategory": {
+            "id": "noun",
+            "text": "Noun"
+          },
+          "text": "ace"
+        },
+        {
+          "entries": [
+            {
+              "senses": [
+                {
+                  "id": "b-en-es0000347.007",
+                  "translations": [
+                    {
+                      "collocations": [
+                        {
+                          "id": "reporter",
+                          "text": "reporter",
+                          "type": "object"
+                        },
+                        {
+                          "id": "negotiator",
+                          "text": "negotiator",
+                          "type": "object"
+                        }
+                      ],
+                      "language": "es",
+                      "text": "de primera",
+                      "type": "direct"
+                    },
+                    {
+                      "collocations": [
+                        {
+                          "id": "reporter",
+                          "text": "reporter",
+                          "type": "object"
+                        },
+                        {
+                          "id": "negotiator",
+                          "text": "negotiator",
+                          "type": "object"
+                        }
+                      ],
+                      "language": "es",
+                      "text": "destacado",
+                      "type": "direct"
+                    }
+                  ]
+                },
+                {
+                  "id": "b-en-es0000347.008",
+                  "translations": [
+                    {
+                      "language": "es",
+                      "registers": [
+                        {
+                          "id": "informal",
+                          "text": "Informal"
+                        }
+                      ],
+                      "text": "bárbaro",
+                      "type": "direct"
+                    },
+                    {
+                      "language": "es",
+                      "regions": [
+                        {
+                          "id": "spain",
+                          "text": "Spain"
+                        }
+                      ],
+                      "registers": [
+                        {
+                          "id": "slang",
+                          "text": "Slang"
+                        }
+                      ],
+                      "text": "guay",
+                      "type": "direct"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "language": "en",
+          "lexicalCategory": {
+            "id": "adjective",
+            "text": "Adjective"
+          },
+          "text": "ace"
+        },
+        {
+          "entries": [
+            {
+              "senses": [
+                {
+                  "id": "b-en-es0000347.010",
+                  "translations": [
+                    {
+                      "language": "es",
+                      "text": "lucirse en",
+                      "type": "direct"
+                    },
+                    {
+                      "language": "es",
+                      "text": "sobresalir en",
+                      "type": "direct"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "language": "en",
+          "lexicalCategory": {
+            "id": "verb",
+            "text": "Verb"
+          },
+          "text": "ace"
+        }
+      ],
+      "type": "headword",
+      "word": "ace"
+    }
+  ],
+  "word": "ace"
+}
