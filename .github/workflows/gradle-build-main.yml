@@ -1,4 +1,4 @@
-name: Run Gradle test
+name: Run Gradle check
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - releases/*
 
 jobs:
-  gradle:
+  gradle-check:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -16,16 +16,6 @@ jobs:
         distribution: 'adopt'
         java-version: '8'
     - uses: eskatos/gradle-command-action@v1
-      name: gradle test
+      name: gradle check
       with:
-        arguments: test jacocoTestReport
-      env:
-        OXFORDKEY: ${{secrets.OXFORDKEY}}
-        OXFORDID: ${{secrets.OXFORDID}}
-    - name: Coveralls Test Report
-      run: ./gradlew coveralls
-      env:
-        COVERALLS_REPO_TOKEN: ${{secrets.COVERALLS_REPO_TOKEN}}
-        CI_NAME: Github Actions
-        CI_BRANCH: ${{github.ref}}
-        CI_PULL_REQUEST: ${{github.event.pull_request.html_url}}
+        arguments: check
