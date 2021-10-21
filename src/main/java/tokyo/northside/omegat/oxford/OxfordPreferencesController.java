@@ -2,15 +2,20 @@ package tokyo.northside.omegat.oxford;
 
 import org.omegat.gui.preferences.BasePreferencesController;
 import org.omegat.util.CredentialsManager;
+import org.omegat.util.Preferences;
 
 import java.awt.*;
 
 public class OxfordPreferencesController extends BasePreferencesController {
 
+    private static final String OPTION_OXFORD_ENABLED = "dictionary_oxford_enabled";
     private static final String OPTION_OXFORD_APPID = "dictionary_oxford_appid";
     private static final String OPTION_OXFORD_APPKEY = "dictionary_oxford_appkey";
     private OxfordOptionsPanel panel;
 
+    static boolean isEnabled() {
+        return Preferences.isPreferenceDefault(OPTION_OXFORD_ENABLED, false);
+    }
     static String getAppId() {
         return getCredential(OPTION_OXFORD_APPID);
     }
@@ -50,6 +55,7 @@ public class OxfordPreferencesController extends BasePreferencesController {
 
     @Override
     protected void initFromPrefs() {
+        panel.enableOption.setSelected(isEnabled());
         panel.appIdField.setText(getCredential(OPTION_OXFORD_APPID));
         panel.appKeyField.setText(getCredential(OPTION_OXFORD_APPKEY));
     }
@@ -70,12 +76,14 @@ public class OxfordPreferencesController extends BasePreferencesController {
 
     @Override
     public void persist() {
+        Preferences.setPreference(OPTION_OXFORD_ENABLED, panel.enableOption.isSelected());
         setCredential(OPTION_OXFORD_APPID, panel.appIdField.getText());
         setCredential(OPTION_OXFORD_APPKEY, panel.appKeyField.getText());
     }
 
     @Override
     public void restoreDefaults() {
+        panel.enableOption.setSelected(false);
     }
 
     private void initGui() {

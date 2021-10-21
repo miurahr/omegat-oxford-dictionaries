@@ -31,7 +31,6 @@ import org.omegat.util.Preferences;
 
 public final class OxfordDictionaryPlugin {
 
-    private static final String OPTION_OXFORD_ENABLED = "dictionary_oxford_enabled";
     private static OnlineDictionaryApplicationEventListener listener = new OnlineDictionaryApplicationEventListener();
     private static OxfordDriver oxfordDriver;
 
@@ -61,7 +60,7 @@ public final class OxfordDictionaryPlugin {
         @Override
         public void onProjectChanged(PROJECT_CHANGE_TYPE project_change_type) {
             if (project_change_type.equals(PROJECT_CHANGE_TYPE.LOAD)) {
-                if (Preferences.isPreferenceDefault(OPTION_OXFORD_ENABLED, false)) {
+                if (OxfordPreferencesController.isEnabled()) {
                     Language source = Core.getProject().getProjectProperties().getSourceLanguage();
                     Language target = Core.getProject().getProjectProperties().getTargetLanguage();
                     oxfordDriver = new OxfordDriver(source, target);
