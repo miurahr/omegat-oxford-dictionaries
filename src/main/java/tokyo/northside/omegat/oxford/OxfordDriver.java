@@ -1,12 +1,9 @@
-package tokyo.northside.omegat;
+package tokyo.northside.omegat.oxford;
 
-import org.apache.hc.client5.http.ClientProtocolException;
 import org.omegat.core.dictionaries.DictionaryEntry;
 import org.omegat.core.dictionaries.IDictionary;
-import org.omegat.util.CredentialsManager;
 import org.omegat.util.Language;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.omegat.util.Log;
 import tokyo.northside.oxfordapi.OxfordDictionaryParser;
 import tokyo.northside.oxfordapi.dtd.*;
 
@@ -19,10 +16,7 @@ import java.util.Map;
 public class OxfordDriver implements IDictionary {
 
     private static final String endpointUrl = "https://od-api.oxforddictionaries.com/api/v2/";
-    private static final String OPTION_OXFORD_APPID = "dictionary_oxford_appid";
-    private static final String OPTION_OXFORD_APPKEY = "dictionary_oxford_appkey";
 
-    private final Logger LOGGER = LoggerFactory.getLogger(OxfordDriver.class.getName());
     private final Language source;
     private final Language target;
     private final Map<String, List<DictionaryEntry>> cache = new HashMap<>();
@@ -49,15 +43,15 @@ public class OxfordDriver implements IDictionary {
         String sourceLang = source.getLanguageCode();
         String targetLang = target.getLanguageCode();
         String targetUrl = String.format("%stranslations/%s/%s/%s?&strictMatch=%s", endpointUrl, sourceLang, targetLang, wordId, strictMatch);
-        LOGGER.info("target URL: " + targetUrl);
+        Log.log("target URL: " + targetUrl);
         return targetUrl;
     }
 
     private Map<String, Object> getHeaderEntries() {
         Map<String, Object> header = new HashMap<>();
         header.put("Accept", "application/json");
-        header.put("app_id", getCredential(OPTION_OXFORD_APPID));
-        header.put("app_key", getCredential(OPTION_OXFORD_APPKEY));
+        header.put("app_id", OxfordPreferencesController.getAppId());
+        header.put("app_key", OxfordPreferencesController.getAppKey());
         return header;
     }
 
@@ -66,10 +60,8 @@ public class OxfordDriver implements IDictionary {
         String response = null;
         try {
             response = QueryUtil.query(requestUrl, header);
-        } catch (ClientProtocolException cpe) {
-            LOGGER.info(cpe.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.log(e.getMessage());
         }
         if (response != null) {
             OxfordDictionaryParser parser = new OxfordDictionaryParser(word);
@@ -77,40 +69,10 @@ public class OxfordDriver implements IDictionary {
                 parser.parse(response);
                 return parser.getResults();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.log(e.getMessage());
             }
         }
         return new ArrayList<>();
-    }
-
-    /**
-     * Retrieve a credential with the given ID. First checks temporary system properties, then falls back to
-     * the program's persistent preferences. Store a credential with
-     * {@link #setCredential(String, String, boolean)}.
-     *
-     * @param id ID or key of the credential to retrieve
-     * @return the credential value in plain text
-     */
-    protected String getCredential(String id) {
-        String property = System.getProperty(id);
-        if (property != null) {
-            return property;
-        }
-        return CredentialsManager.getInstance().retrieve(id).orElse("");
-    }
-
-    /**
-     * Store a credential. Credentials are stored in temporary system properties and, if
-     * <code>temporary</code> is <code>false</code>, in the program's persistent preferences encoded in
-     * Base64. Retrieve a credential with {@link #getCredential(String)}.
-     *
-     * @param id        ID or key of the credential to store
-     * @param value     value of the credential to store
-     * @param temporary if <code>false</code>, encode with Base64 and store in persistent preferences as well
-     */
-    protected void setCredential(String id, String value, boolean temporary) {
-        System.setProperty(id, value);
-        CredentialsManager.getInstance().store(id, temporary ? "" : value);
     }
 
     /**

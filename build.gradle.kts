@@ -32,7 +32,7 @@ repositories {
 
 omegat {
     version = "5.7.0"
-    pluginClass = "tokyo.northside.omegat.OxfordDictionaryPlugin"
+    pluginClass = "tokyo.northside.omegat.oxford.OxfordDictionaryPlugin"
 }
 
 dependencies {

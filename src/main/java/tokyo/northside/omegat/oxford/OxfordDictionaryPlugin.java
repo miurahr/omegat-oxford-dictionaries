@@ -17,12 +17,14 @@ Oxford dictionary API plugin for OmegaT CAT tool(http://www.omegat.org/)
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************************************/
 
-package tokyo.northside.omegat;
+package tokyo.northside.omegat.oxford;
 
 import org.omegat.core.Core;
 import org.omegat.core.CoreEvents;
 import org.omegat.core.events.IApplicationEventListener;
 import org.omegat.core.events.IProjectEventListener;
+import org.omegat.gui.glossary.taas.TaaSPreferencesController;
+import org.omegat.gui.preferences.PreferencesControllers;
 import org.omegat.util.Language;
 import org.omegat.util.Log;
 import org.omegat.util.Preferences;
@@ -31,7 +33,6 @@ import org.omegat.util.Preferences;
 public final class OxfordDictionaryPlugin {
 
     private static final String OPTION_OXFORD_ENABLED = "dictionary_oxford_enabled";
-
     private static OnlineDictionaryApplicationEventListener listener = new OnlineDictionaryApplicationEventListener();
     private static OxfordDriver oxfordDriver;
 
@@ -42,6 +43,7 @@ public final class OxfordDictionaryPlugin {
      */
     public static void loadPlugins() {
         CoreEvents.registerApplicationEventListener(listener);
+        PreferencesControllers.addSupplier(OxfordPreferencesController::new);
     }
 
     /**
@@ -65,16 +67,19 @@ public final class OxfordDictionaryPlugin {
                     Language target = Core.getProject().getProjectProperties().getTargetLanguage();
                     oxfordDriver = new OxfordDriver(source, target);
                     Core.getDictionaries().addDictionary(oxfordDriver);
-                    Log.log("Oxford dictionary API driver loaded.");
+                    Log.log("Oxford dictionary API plugin activated.");
+                } else {
+                    Log.log("Oxford dictionary API plugin disabled.");
                 }
             } else if (project_change_type.equals(PROJECT_CHANGE_TYPE.CLOSE)) {
                 if (oxfordDriver != null) {
                     Core.getDictionaries().removeDictionary(oxfordDriver);
                     oxfordDriver = null;
-                    Log.log("Oxford dictionary API driver unloaded.");
+                    Log.log("Oxford dictionary API plugin deactivated.");
                 }
             }
         }
+
     }
 
     static class OnlineDictionaryApplicationEventListener implements IApplicationEventListener {
@@ -87,5 +92,7 @@ public final class OxfordDictionaryPlugin {
         @Override
         public void onApplicationShutdown() {
         }
+
+
     }
 }
