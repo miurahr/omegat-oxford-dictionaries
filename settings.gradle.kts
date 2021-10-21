@@ -1,1 +1,1 @@
-rootProject.name = "omegat-oxford-dictionary"
+rootProject.name = "omegat-oxford-dictionaries"
