@@ -23,7 +23,6 @@ import org.omegat.core.Core;
 import org.omegat.core.CoreEvents;
 import org.omegat.core.events.IApplicationEventListener;
 import org.omegat.core.events.IProjectEventListener;
-import org.omegat.gui.glossary.taas.TaaSPreferencesController;
 import org.omegat.gui.preferences.PreferencesControllers;
 import org.omegat.util.Language;
 import org.omegat.util.Log;

@@ -39,16 +39,12 @@ dependencies {
     packIntoJar("com.fasterxml.jackson.core:jackson-core:2.13.0")
     packIntoJar("com.fasterxml.jackson.core:jackson-databind:2.13.0")
     packIntoJar("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.0")
-    implementation("commons-io:commons-io:2.7")
-    implementation("commons-lang:commons-lang:2.6")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
-    testImplementation("commons-io:commons-io:2.7")
     testImplementation("org.codehaus.groovy:groovy-all:3.0.9")
 }
 
 tasks {
-    // Enable xml for coveralls.
     "jacocoTestReport"(JacocoReport::class) {
         reports {
             // To be read by humans
