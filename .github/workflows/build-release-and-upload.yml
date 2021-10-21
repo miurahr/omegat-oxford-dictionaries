@@ -19,41 +19,21 @@ jobs:
     - uses: eskatos/gradle-command-action@v1
       with:
         arguments: build
-      env:
-        OXFORDKEY: ${{secrets.OXFORDKEY}}
-        OXFORDID: ${{secrets.OXFORDID}}
     - name: Get the version
       id: get_version
       run: |
         echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release v${{ steps.get_version.outputs.VERSION }}
-        draft: false
-        prerelease: false
-    - name: Upload Release Asset(zip)
-      id: upload-release-asset-zip
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/distributions/omegat-onlinedictionary-${{ steps.get_version.outputs.VERSION }}.zip
-        asset_name: omegat-onlinedictionary-${{ steps.get_version.outputs.VERSION }}.zip
-        asset_content_type: application/zip
-    - name: Upload Release Asset(jar)
-      id: upload-release-asset-jar
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/libs/omegat-onlinedictionary-${{ steps.get_version.outputs.VERSION }}.jar
-        asset_name: omegat-onlinedictionary-${{ steps.get_version.outputs.VERSION }}.jar
-        asset_content_type: application/java-archive
 
+    - name: Upload to Release(zip)
+      uses: svenstaro/upload-release-action@v2
+      with: 
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/distributions/omegat-oxford-dictionaries-${{ steps.get_version.outputs.VERSION }}.zip
+        tag: ${{ github.ref }}
+        release_name: Release v${{ steps.get_version.outputs.VERSION }}
+    - name: Upload to Release(jar)
+      uses: svenstaro/upload-release-action@v2
+      with: 
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/libs/omegat-oxford-dictionaries-${{ steps.get_version.outputs.VERSION }}.jar
+        tag: ${{ github.ref }}
