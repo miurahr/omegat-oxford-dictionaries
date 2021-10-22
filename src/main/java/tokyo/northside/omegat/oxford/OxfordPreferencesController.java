@@ -11,17 +11,28 @@ public class OxfordPreferencesController extends BasePreferencesController {
     private static final String OPTION_OXFORD_ENABLED = "dictionary_oxford_enabled";
     private static final String OPTION_OXFORD_APPID = "dictionary_oxford_appid";
     private static final String OPTION_OXFORD_APPKEY = "dictionary_oxford_appkey";
+    private static final String OPTION_OXFORD_MONO = "dictionary_oxford_mono";
+    private static final String OPTION_OXFORD_BILINGUAL = "dictionary_oxford_bilingual";
     private OxfordOptionsPanel panel;
 
     static boolean isEnabled() {
         return Preferences.isPreferenceDefault(OPTION_OXFORD_ENABLED, false);
     }
+
     static String getAppId() {
         return getCredential(OPTION_OXFORD_APPID);
     }
 
     static String getAppKey() {
         return getCredential(OPTION_OXFORD_APPKEY);
+    }
+
+    static boolean isBilingual() {
+        return Preferences.isPreferenceDefault(OPTION_OXFORD_BILINGUAL, false);
+    }
+
+    static boolean isMonolingual() {
+        return Preferences.isPreferenceDefault(OPTION_OXFORD_MONO, true);
     }
 
     /**
@@ -53,12 +64,22 @@ public class OxfordPreferencesController extends BasePreferencesController {
         CredentialsManager.getInstance().store(id, value);
     }
 
+    private void setState() {
+        panel.appIdField.setEnabled(panel.enableOption.isSelected());
+        panel.appKeyField.setEnabled(panel.enableOption.isSelected());
+        panel.queryMonolingual.setEnabled(panel.enableOption.isSelected());
+        panel.queryBilingual.setEnabled(panel.enableOption.isSelected());
+    }
+
     @Override
     protected void initFromPrefs() {
         panel.enableOption.setSelected(isEnabled());
+        panel.queryMonolingual.setSelected(isMonolingual());
+        panel.queryBilingual.setSelected(isBilingual());
         panel.appIdField.setText(getCredential(OPTION_OXFORD_APPID));
         panel.appKeyField.setText(getCredential(OPTION_OXFORD_APPKEY));
-    }
+        setState();
+   }
 
     @Override
     public String toString() {
@@ -77,6 +98,8 @@ public class OxfordPreferencesController extends BasePreferencesController {
     @Override
     public void persist() {
         Preferences.setPreference(OPTION_OXFORD_ENABLED, panel.enableOption.isSelected());
+        Preferences.setPreference(OPTION_OXFORD_MONO, panel.queryMonolingual.isSelected());
+        Preferences.setPreference(OPTION_OXFORD_BILINGUAL, panel.queryBilingual.isSelected());
         setCredential(OPTION_OXFORD_APPID, panel.appIdField.getText());
         setCredential(OPTION_OXFORD_APPKEY, panel.appKeyField.getText());
     }
@@ -84,6 +107,11 @@ public class OxfordPreferencesController extends BasePreferencesController {
     @Override
     public void restoreDefaults() {
         panel.enableOption.setSelected(false);
+        panel.appIdField.setEnabled(false);
+        panel.appKeyField.setEnabled(false);
+        panel.queryMonolingual.setSelected(true);
+        panel.queryBilingual.setSelected(false);
+        setState();
     }
 
     private void initGui() {

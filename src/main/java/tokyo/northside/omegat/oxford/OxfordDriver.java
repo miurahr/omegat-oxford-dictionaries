@@ -1,5 +1,6 @@
 package tokyo.northside.omegat.oxford;
 
+import org.apache.hc.client5.http.ClientProtocolException;
 import org.omegat.core.dictionaries.DictionaryEntry;
 import org.omegat.core.dictionaries.IDictionary;
 import org.omegat.util.Language;
@@ -8,10 +9,7 @@ import tokyo.northside.oxfordapi.OxfordDictionaryParser;
 import tokyo.northside.oxfordapi.dtd.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OxfordDriver implements IDictionary {
 
@@ -26,40 +24,115 @@ public class OxfordDriver implements IDictionary {
         this.target = target;
     }
 
-    protected String getEntriesRequestUrl(final String word, final boolean strict) {
-        final String strictMatch;
-        if (strict) {
-            strictMatch = "true";
-        } else {
-            strictMatch = "false";
+    /**
+     * Read article's text.
+     *
+     * @param word The word to look up in the dictionary
+     * @return List of entries. May be empty, but cannot be null.
+     */
+    @Override
+    public List<DictionaryEntry> readArticles(String word) {
+        return queryArticle(word, true);
+    }
+
+    /**
+     * Read article's text. Matching is predictive, so e.g. supplying "term"
+     * will return articles for "term", "terminology", "termite", etc.
+     *
+     * @param word The word to look up in the dictionary
+     * @return List of entries. May be empty, but cannot be null.
+     */
+    @Override
+    public List<DictionaryEntry> readArticlesPredictive(String word) {
+        return queryArticle(word, false);
+    }
+
+    private List<DictionaryEntry> queryArticle(final String word, final boolean strict) {
+        if (!cache.containsKey(word)) {
+            List<DictionaryEntry> dictionaryEntries = new ArrayList<>();
+            if (OxfordPreferencesController.isMonolingual()) {
+                try {
+                    dictionaryEntries.addAll(getDefinitions(word, strict));
+                } catch (ClientProtocolException cpe) {
+                    // when got connection/query error, return without any content.
+                    return Collections.emptyList();
+                }
+            }
+            if (OxfordPreferencesController.isBilingual()) {
+                try {
+                    dictionaryEntries.addAll(getTranslations(word));
+                } catch (ClientProtocolException ignored) {
+                }
+                if (dictionaryEntries.isEmpty()) {
+                    return Collections.emptyList();
+                }
+            }
+            cache.put(word, dictionaryEntries);
         }
-        final String wordId = word.toLowerCase();
-        String language = source.getLanguageCode();
-        return String.format("%sentries/%s/%s?&strictMatch=%s", endpointUrl, language, wordId, strictMatch);
+        return cache.get(word);
     }
 
-    protected String getTranslationsRequestUrl(final String word, final boolean strictMatch) {
-        final String wordId = word.toLowerCase();
-        String sourceLang = source.getLanguageCode();
-        String targetLang = target.getLanguageCode();
-        String targetUrl = String.format("%stranslations/%s/%s/%s?&strictMatch=%s", endpointUrl, sourceLang, targetLang, wordId, strictMatch);
-        Log.log("target URL: " + targetUrl);
-        return targetUrl;
+    protected List<DictionaryEntry> getTranslations(final String word) throws ClientProtocolException {
+        List<DictionaryEntry> dictionaryEntries = new ArrayList<>();
+        List<Result> translations;
+        translations = queryTranslation(word);
+        for (Result result : translations) {
+            for (LexicalEntry lexicalEntry : result.getLexicalEntries()) {
+                String title = lexicalEntry.getText();
+                StringBuilder sb = new StringBuilder("<ol>");
+                for (Entry entry : lexicalEntry.getEntries()) {
+                    for (Sense sense : entry.getSenses()) {
+                        if (sense.getTranslations() == null) continue;
+                        for (Translation translation : sense.getTranslations()) {
+                            sb.append("<li>").append(translation.getText()).append("</li>");
+                        }
+                    }
+                }
+                sb.append("</ol>");
+                dictionaryEntries.add(new DictionaryEntry(title, sb.toString()));
+            }
+        }
+        return dictionaryEntries;
     }
 
-    private Map<String, Object> getHeaderEntries() {
-        Map<String, Object> header = new HashMap<>();
-        header.put("Accept", "application/json");
-        header.put("app_id", OxfordPreferencesController.getAppId());
-        header.put("app_key", OxfordPreferencesController.getAppKey());
-        return header;
+    protected List<DictionaryEntry> getDefinitions(final String word, final boolean strict) throws ClientProtocolException {
+        List<DictionaryEntry> dictionaryEntries = new ArrayList<>();
+        List<Result> results;
+        results = queryWord(word, strict);
+        for (Result result : results) {
+            for (LexicalEntry lexicalEntry : result.getLexicalEntries()) {
+                String title = lexicalEntry.getText();
+                StringBuilder sb = new StringBuilder("<ol>");
+                for (Entry entry : lexicalEntry.getEntries()) {
+                    for (Sense sense : entry.getSenses()) {
+                        if (sense.getDefinitions() == null) continue;
+                        for (String text : sense.getDefinitions()) {
+                            sb.append("<li>").append(text).append("</li>");
+                        }
+                    }
+                }
+                sb.append("</ol>");
+                dictionaryEntries.add(new DictionaryEntry(title, sb.toString()));
+            }
+        }
+        return dictionaryEntries;
     }
 
-    protected List<Result> query(final String requestUrl, final String word) {
+    protected List<Result> queryTranslation(final String word) throws ClientProtocolException {
+        return query(getTranslationsRequestUrl(word), word);
+    }
+
+    protected List<Result> queryWord(final String word, final boolean strict) throws ClientProtocolException {
+        return query(getEntriesRequestUrl(word, strict), word);
+    }
+
+    protected List<Result> query(final String requestUrl, final String word) throws ClientProtocolException {
         Map<String, Object> header = getHeaderEntries();
         String response = null;
         try {
             response = QueryUtil.query(requestUrl, header);
+        } catch (ClientProtocolException cpe) {
+            throw cpe;
         } catch (IOException e) {
             Log.log(e.getMessage());
         }
@@ -75,72 +148,47 @@ public class OxfordDriver implements IDictionary {
         return new ArrayList<>();
     }
 
-    /**
-     * Read article's text.
-     *
-     * @param word The word to look up in the dictionary
-     * @return List of entries. May be empty, but cannot be null.
-     */
-    @Override
-    public List<DictionaryEntry> readArticles(String word) {
-        if (!cache.containsKey(word)) {
-            List<DictionaryEntry> dictionaryEntries = new ArrayList<>();
-            List<Result> results = query(getEntriesRequestUrl(word, false), word);
-            List<Result> translations = query(getTranslationsRequestUrl(word, false), word);
-            for (Result result : results) {
-                for (LexicalEntry lexicalEntry : result.getLexicalEntries()) {
-                    for (Entry entry : lexicalEntry.getEntries()) {
-                        for (Sense sense : entry.getSenses()) {
-                            if (sense.getDefinitions() == null) continue;
-                            StringBuilder sb = new StringBuilder();
-                            for (String text : sense.getDefinitions()) {
-                                sb.append(text);
-                                sb.append("/");
-                            }
-                            dictionaryEntries.add(new DictionaryEntry(word, sb.toString()));
-                        }
-                    }
-                }
-            }
-            for (Result result1 : translations) {
-                for (LexicalEntry lexicalEntry1 : result1.getLexicalEntries()) {
-                    for (Entry entry1 : lexicalEntry1.getEntries()) {
-                        for (Sense sense1 : entry1.getSenses()) {
-                            if (sense1.getTranslations() == null) continue;
-                            StringBuilder sb = new StringBuilder();
-                            for (Translation translation : sense1.getTranslations()) {
-                                sb.append("/");
-                                sb.append(translation.getText());
-                            }
-                            dictionaryEntries.add(new DictionaryEntry(word, sb.toString()));
-                        }
-                    }
-                }
-            }
-            cache.put(word, dictionaryEntries);
+    protected String getEntriesRequestUrl(final String word, final boolean strict) {
+        final String strictMatch;
+        if (strict) {
+            strictMatch = "true";
+        } else {
+            strictMatch = "false";
         }
-        return cache.get(word);
+        final String wordId = word.toLowerCase();
+        String language = source.getLanguageCode();
+        if (language.equals("en")) {
+            language = "en-gb";
+        }
+        String targetUrl = String.format("%sentries/%s/%s?strictMatch=%s", endpointUrl, language, wordId, strictMatch);
+        Log.log("target URL: " + targetUrl);
+        return targetUrl;
     }
 
-    /**
-     * Read article's text. Matching is predictive, so e.g. supplying "term"
-     * will return articles for "term", "terminology", "termite", etc. The
-     * default implementation simply calls {@link #readArticles(String)} for
-     * backwards compatibility.
-     *
-     * @param word The word to look up in the dictionary
-     * @return List of entries. May be empty, but cannot be null.
-     */
-    @Override
-    public List<DictionaryEntry> readArticlesPredictive(String word) throws Exception {
-        return readArticles(word);
+    protected String getTranslationsRequestUrl(final String word) {
+        final String wordId = word.toLowerCase();
+        String sourceLang = source.getLanguageCode();
+        String targetLang = target.getLanguageCode();
+        if (sourceLang.equals("en")) {
+            sourceLang = "en-gb";
+        }
+        if (targetLang.equals("en")) {
+            targetLang = "en-gb";
+        }
+        String targetUrl = String.format("%stranslations/%s/%s?q=%s", endpointUrl, sourceLang, targetLang, wordId);
+        Log.log("target URL: " + targetUrl);
+        return targetUrl;
     }
 
-    /**
-     * Dispose IDictionary. Default is no action.
-     */
+    private Map<String, Object> getHeaderEntries() {
+        Map<String, Object> header = new HashMap<>();
+        header.put("Accept", "application/json");
+        header.put("app_id", OxfordPreferencesController.getAppId());
+        header.put("app_key", OxfordPreferencesController.getAppKey());
+        return header;
+    }
+
     @Override
-    public void close() throws IOException {
-        IDictionary.super.close();
+    public void close() {
     }
 }

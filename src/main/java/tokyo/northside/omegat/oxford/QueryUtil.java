@@ -51,7 +51,7 @@ public final class QueryUtil {
                 throw new ClientProtocolException(ex);
             }
         } else {
-            throw new ClientProtocolException("Unexpected response status: " + status);
+            throw new ClientProtocolException(String.format("Unexpected response status: %d", status));
         }
     };
 
