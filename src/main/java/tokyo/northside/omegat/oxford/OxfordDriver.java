@@ -160,9 +160,7 @@ public class OxfordDriver implements IDictionary {
         if (language.equals("en")) {
             language = "en-gb";
         }
-        String targetUrl = String.format("%sentries/%s/%s?strictMatch=%s", endpointUrl, language, wordId, strictMatch);
-        Log.log("target URL: " + targetUrl);
-        return targetUrl;
+        return String.format("%sentries/%s/%s?strictMatch=%s", endpointUrl, language, wordId, strictMatch);
     }
 
     protected String getTranslationsRequestUrl(final String word) {
@@ -175,9 +173,7 @@ public class OxfordDriver implements IDictionary {
         if (targetLang.equals("en")) {
             targetLang = "en-gb";
         }
-        String targetUrl = String.format("%stranslations/%s/%s?q=%s", endpointUrl, sourceLang, targetLang, wordId);
-        Log.log("target URL: " + targetUrl);
-        return targetUrl;
+        return String.format("%stranslations/%s/%s?q=%s", endpointUrl, sourceLang, targetLang, wordId);
     }
 
     private Map<String, Object> getHeaderEntries() {
