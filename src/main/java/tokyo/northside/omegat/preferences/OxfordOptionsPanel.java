@@ -12,6 +12,8 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
+@SuppressWarnings("visibilitymodifier")
 public class OxfordOptionsPanel extends JPanel {
     JTextField appIdField;
     JTextField appKeyField;

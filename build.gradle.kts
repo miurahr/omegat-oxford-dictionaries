@@ -35,11 +35,6 @@ omegat {
 
 dependencies {
     packIntoJar("tokyo.northside:java-oxford-dictionaries:0.1.1")
-    packIntoJar("com.fasterxml.jackson.core:jackson-core:2.13.0")
-    packIntoJar("com.fasterxml.jackson.core:jackson-databind:2.13.0")
-    packIntoJar("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 }
 
 spotbugs {
