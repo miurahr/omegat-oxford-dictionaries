@@ -19,10 +19,6 @@ public class OxfordPreferencesController extends BasePreferencesController {
         return Preferences.isPreferenceDefault(OPTION_OXFORD_ENABLED, false);
     }
 
-    public static boolean isCredentialChanged() {
-        return System.getProperty(OPTION_OXFORD_APPID) != null;
-    }
-
     public static String getAppId() {
         return getCredential(OPTION_OXFORD_APPID);
     }

@@ -1,13 +1,12 @@
 package tokyo.northside.omegat.oxford;
 
-import org.apache.hc.client5.http.ClientProtocolException;
 import org.omegat.core.dictionaries.DictionaryEntry;
 import org.omegat.core.dictionaries.IDictionary;
 import org.omegat.util.Language;
 import tokyo.northside.omegat.preferences.OxfordPreferencesController;
-import tokyo.northside.oxfordapi.ODSearcher;
+import tokyo.northside.oxfordapi.OxfordClient;
+import tokyo.northside.oxfordapi.OxfordClient.OxfordClientException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,16 +15,17 @@ import java.util.Map;
 
 public class OxfordDriver implements IDictionary {
 
+    private static final String endpointUrl = "https://od-api.oxforddictionaries.com/api/v2/";
     private final Language source;
     private final Language target;
-    private ODSearcher searcher;
+    private final OxfordClient searcher;
     private final Map<String, List<DictionaryEntry>> cache = new HashMap<>();
 
     public OxfordDriver(final Language source, final Language target) {
         this.source = source;
         this.target = target;
-        searcher = new ODSearcher(OxfordPreferencesController.getAppId(),
-                OxfordPreferencesController.getAppKey());
+        searcher = new OxfordClient(OxfordPreferencesController.getAppId(),
+                OxfordPreferencesController.getAppKey(), endpointUrl);
     }
 
     /**
@@ -53,20 +53,13 @@ public class OxfordDriver implements IDictionary {
 
     private List<DictionaryEntry> queryArticle(final String word, final boolean strict) {
         if (!cache.containsKey(word)) {
-            if (OxfordPreferencesController.isCredentialChanged()) {
-                searcher.setAppId(OxfordPreferencesController.getAppId());
-                searcher.setAppKey(OxfordPreferencesController.getAppKey());
-            }
             List<DictionaryEntry> dictionaryEntries = new ArrayList<>();
             if (OxfordPreferencesController.isMonolingual()) {
                 String language = source.getLanguageCode();
                 try {
                     dictionaryEntries.addAll(searcher.getDefinitions(word, language, strict));
-                } catch (ClientProtocolException cpe) {
+                } catch (OxfordClientException oce) {
                     // when got connection/query error, return without any content.
-                    return Collections.emptyList();
-                } catch (IOException e) {
-                    e.printStackTrace();
                     return Collections.emptyList();
                 }
             }
@@ -75,7 +68,7 @@ public class OxfordDriver implements IDictionary {
                 String targetLang = target.getLanguageCode();
                 try {
                     dictionaryEntries.addAll(searcher.getTranslations(word, sourceLang, targetLang));
-                } catch (IOException ignored) {
+                } catch (OxfordClientException ignored) {
                 }
                 if (dictionaryEntries.isEmpty()) {
                     return Collections.emptyList();
