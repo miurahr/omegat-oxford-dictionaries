@@ -6,6 +6,8 @@ import org.omegat.util.Language;
 import tokyo.northside.omegat.preferences.OxfordPreferencesController;
 import tokyo.northside.oxfordapi.OxfordClient;
 import tokyo.northside.oxfordapi.OxfordClient.OxfordClientException;
+import tokyo.northside.oxfordapi.dtd.LexicalEntry;
+import tokyo.northside.oxfordapi.dtd.Result;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +17,7 @@ import java.util.Map;
 
 public class OxfordDriver implements IDictionary {
 
-    private static final String endpointUrl = "https://od-api.oxforddictionaries.com/api/v2/";
+    private static final String ENDPOINT_URL = "https://od-api.oxforddictionaries.com/api/v2/";
     private final Language source;
     private final Language target;
     private final OxfordClient searcher;
@@ -25,7 +27,7 @@ public class OxfordDriver implements IDictionary {
         this.source = source;
         this.target = target;
         searcher = new OxfordClient(OxfordPreferencesController.getAppId(),
-                OxfordPreferencesController.getAppKey(), endpointUrl);
+                OxfordPreferencesController.getAppKey(), ENDPOINT_URL);
     }
 
     /**
@@ -35,7 +37,7 @@ public class OxfordDriver implements IDictionary {
      * @return List of entries. May be empty, but cannot be null.
      */
     @Override
-    public List<DictionaryEntry> readArticles(String word) {
+    public List<DictionaryEntry> readArticles(final String word) {
         return queryArticle(word, true);
     }
 
@@ -47,7 +49,7 @@ public class OxfordDriver implements IDictionary {
      * @return List of entries. May be empty, but cannot be null.
      */
     @Override
-    public List<DictionaryEntry> readArticlesPredictive(String word) {
+    public List<DictionaryEntry> readArticlesPredictive(final String word) {
         return queryArticle(word, false);
     }
 
@@ -57,7 +59,11 @@ public class OxfordDriver implements IDictionary {
             if (OxfordPreferencesController.isMonolingual()) {
                 String language = source.getLanguageCode();
                 try {
-                    dictionaryEntries.addAll(searcher.getDefinitions(word, language, strict));
+                    for (Result result: searcher.getEntries(word, language, strict)) {
+                        for (LexicalEntry lexicalEntry : result.getLexicalEntries()) {
+                            dictionaryEntries.add(HTMLFormatter.formatDefinitions(lexicalEntry));
+                        }
+                    }
                 } catch (OxfordClientException oce) {
                     // when got connection/query error, return without any content.
                     return Collections.emptyList();
@@ -67,7 +73,11 @@ public class OxfordDriver implements IDictionary {
                 String sourceLang = source.getLanguageCode();
                 String targetLang = target.getLanguageCode();
                 try {
-                    dictionaryEntries.addAll(searcher.getTranslations(word, sourceLang, targetLang));
+                    for (Result result : searcher.getTranslations(word, sourceLang, targetLang)) {
+                        for (LexicalEntry lexicalEntry : result.getLexicalEntries()) {
+                            dictionaryEntries.add(HTMLFormatter.formatTranslations(lexicalEntry));
+                        }
+                    }
                 } catch (OxfordClientException ignored) {
                 }
                 if (dictionaryEntries.isEmpty()) {
@@ -78,6 +88,7 @@ public class OxfordDriver implements IDictionary {
         }
         return cache.get(word);
     }
+
 
     @Override
     public void close() {

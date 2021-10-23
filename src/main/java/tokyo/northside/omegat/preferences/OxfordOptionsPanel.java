@@ -1,9 +1,14 @@
 package tokyo.northside.omegat.preferences;
 
-import javafx.scene.control.CheckBox;
-
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -28,14 +33,14 @@ public class OxfordOptionsPanel extends JPanel {
 
     class OxfordInputVerifier extends javax.swing.InputVerifier implements ActionListener {
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             JTextField field = (JTextField) e.getSource();
             shouldYieldFocus(field);
             field.selectAll();
         }
 
         @Override
-        public boolean verify(JComponent input) {
+        public boolean verify(final JComponent input) {
             if (input == appIdField) {
                 String str = appIdField.getText();
                 appIdField.setText(str.replaceAll("\\s|\\t", ""));
@@ -66,8 +71,8 @@ public class OxfordOptionsPanel extends JPanel {
         buttonGroup.add(queryBoth);
         appIdField = new JTextField();
         appKeyField = new JTextField();
-        appIdField.setPreferredSize(new Dimension(300,30));
-        appKeyField.setPreferredSize(new Dimension(300,30));
+        appIdField.setPreferredSize(new Dimension(300, 30));
+        appKeyField.setPreferredSize(new Dimension(300, 30));
         appIdField.setHorizontalAlignment(JTextField.LEFT);
         appKeyField.setHorizontalAlignment(JTextField.LEFT);
         JLabel appIdLabel = new JLabel();

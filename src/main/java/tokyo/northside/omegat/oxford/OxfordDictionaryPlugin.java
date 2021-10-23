@@ -58,8 +58,8 @@ public final class OxfordDictionaryPlugin {
         }
 
         @Override
-        public void onProjectChanged(PROJECT_CHANGE_TYPE project_change_type) {
-            if (project_change_type.equals(PROJECT_CHANGE_TYPE.LOAD)) {
+        public void onProjectChanged(final PROJECT_CHANGE_TYPE projectChangeType) {
+            if (projectChangeType.equals(PROJECT_CHANGE_TYPE.LOAD)) {
                 if (OxfordPreferencesController.isEnabled()) {
                     Language source = Core.getProject().getProjectProperties().getSourceLanguage();
                     Language target = Core.getProject().getProjectProperties().getTargetLanguage();
@@ -69,7 +69,7 @@ public final class OxfordDictionaryPlugin {
                 } else {
                     Log.log("Oxford dictionary API plugin disabled.");
                 }
-            } else if (project_change_type.equals(PROJECT_CHANGE_TYPE.CLOSE)) {
+            } else if (projectChangeType.equals(PROJECT_CHANGE_TYPE.CLOSE)) {
                 if (oxfordDriver != null) {
                     Core.getDictionaries().removeDictionary(oxfordDriver);
                     oxfordDriver = null;

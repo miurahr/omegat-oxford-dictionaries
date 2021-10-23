@@ -1,18 +1,28 @@
-package tokyo.northside.oxfordapi;
+package tokyo.northside.omegat.oxford;
 
 import org.omegat.core.dictionaries.DictionaryEntry;
-import tokyo.northside.oxfordapi.dtd.*;
+import tokyo.northside.oxfordapi.dtd.Entry;
+import tokyo.northside.oxfordapi.dtd.Example;
+import tokyo.northside.oxfordapi.dtd.LexicalEntry;
+import tokyo.northside.oxfordapi.dtd.Pronunciation;
+import tokyo.northside.oxfordapi.dtd.Sense;
+import tokyo.northside.oxfordapi.dtd.Translation;
 
 import java.util.List;
 
-public class HTMLFormatter {
+public final class HTMLFormatter {
+
+    private HTMLFormatter() {
+    }
 
     public static DictionaryEntry formatTranslations(final LexicalEntry lexicalEntry) {
         String title = lexicalEntry.getText();
         StringBuilder sb = new StringBuilder("<ol>");
         for (Entry entry : lexicalEntry.getEntries()) {
             for (Sense sense : entry.getSenses()) {
-                if (sense.getTranslations() == null) continue;
+                if (sense.getTranslations() == null) {
+                    continue;
+                }
                 for (Translation translation : sense.getTranslations()) {
                     sb.append("<li>").append(translation.getText()).append("</li>");
                 }
@@ -51,7 +61,9 @@ public class HTMLFormatter {
             }
             sb.append("<ol>");
             for (Sense sense : entry.getSenses()) {
-                if (sense.getDefinitions() == null) continue;
+                if (sense.getDefinitions() == null) {
+                    continue;
+                }
                 for (String text : sense.getDefinitions()) {
                     sb.append("<li>").append(text).append("</li>");
                 }

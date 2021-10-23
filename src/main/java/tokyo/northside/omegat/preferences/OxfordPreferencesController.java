@@ -4,7 +4,7 @@ import org.omegat.gui.preferences.BasePreferencesController;
 import org.omegat.util.CredentialsManager;
 import org.omegat.util.Preferences;
 
-import java.awt.*;
+import java.awt.Component;
 
 public class OxfordPreferencesController extends BasePreferencesController {
 
@@ -43,7 +43,7 @@ public class OxfordPreferencesController extends BasePreferencesController {
      * @param id ID or key of the credential to retrieve
      * @return the credential value in plain text
      */
-     protected static String getCredential(String id) {
+     protected static String getCredential(final String id) {
         String property = System.getProperty(id);
         if (property != null) {
             return property;
@@ -59,7 +59,7 @@ public class OxfordPreferencesController extends BasePreferencesController {
      * @param id        ID or key of the credential to store
      * @param value     value of the credential to store
      */
-     protected static void setCredential(String id, String value) {
+     protected static void setCredential(final String id, final String value) {
         System.setProperty(id, value);
         CredentialsManager.getInstance().store(id, value);
     }
