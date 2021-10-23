@@ -1,4 +1,4 @@
-package tokyo.northside.omegat.oxford;
+package tokyo.northside.omegat.preferences;
 
 import org.omegat.gui.preferences.BasePreferencesController;
 import org.omegat.util.CredentialsManager;
@@ -15,23 +15,27 @@ public class OxfordPreferencesController extends BasePreferencesController {
     private static final String OPTION_OXFORD_BILINGUAL = "dictionary_oxford_bilingual";
     private OxfordOptionsPanel panel;
 
-    static boolean isEnabled() {
+    public static boolean isEnabled() {
         return Preferences.isPreferenceDefault(OPTION_OXFORD_ENABLED, false);
     }
 
-    static String getAppId() {
+    public static boolean isCredentialChanged() {
+        return System.getProperty(OPTION_OXFORD_APPID) != null;
+    }
+
+    public static String getAppId() {
         return getCredential(OPTION_OXFORD_APPID);
     }
 
-    static String getAppKey() {
+    public static String getAppKey() {
         return getCredential(OPTION_OXFORD_APPKEY);
     }
 
-    static boolean isBilingual() {
+    public static boolean isBilingual() {
         return Preferences.isPreferenceDefault(OPTION_OXFORD_BILINGUAL, false);
     }
 
-    static boolean isMonolingual() {
+    public static boolean isMonolingual() {
         return Preferences.isPreferenceDefault(OPTION_OXFORD_MONO, true);
     }
 

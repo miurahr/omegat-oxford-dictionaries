@@ -1,4 +1,4 @@
-package tokyo.northside.omegat.oxford;
+package tokyo.northside.oxfordapi;
 
 import org.apache.hc.client5.http.ClientProtocolException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -15,9 +15,23 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 import java.io.IOException;
 import java.util.Map;
 
-public final class QueryUtil {
-
-    private QueryUtil() { }
+public class QueryUtil {
+    private static final HttpClientResponseHandler<String> responseHandler = response -> {
+        final int status = response.getCode();
+        if (status >= HttpStatus.SC_SUCCESS && status < HttpStatus.SC_REDIRECTION) {
+            try (HttpEntity entity = response.getEntity()) {
+                if (entity != null) {
+                    return EntityUtils.toString(entity);
+                } else {
+                    return null;
+                }
+            } catch (final ParseException ex) {
+                throw new ClientProtocolException(ex);
+            }
+        } else {
+            throw new ClientProtocolException(String.format("Unexpected response status: %d", status));
+        }
+    };
 
     public static String queryPost(final String queryUrl, final Map<String, Object> header, final String json)
             throws IOException {
@@ -37,22 +51,4 @@ public final class QueryUtil {
             return httpclient.execute(httpGet, responseHandler);
         }
     }
-
-    private static final HttpClientResponseHandler<String> responseHandler = response -> {
-        final int status = response.getCode();
-        if (status >= HttpStatus.SC_SUCCESS && status < HttpStatus.SC_REDIRECTION) {
-            try (HttpEntity entity = response.getEntity()) {
-                if (entity != null) {
-                    return EntityUtils.toString(entity);
-                } else {
-                    return null;
-                }
-            } catch (final ParseException ex) {
-                throw new ClientProtocolException(ex);
-            }
-        } else {
-            throw new ClientProtocolException(String.format("Unexpected response status: %d", status));
-        }
-    };
-
 }

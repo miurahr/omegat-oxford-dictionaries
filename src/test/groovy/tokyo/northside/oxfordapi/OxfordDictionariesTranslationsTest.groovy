@@ -10,9 +10,9 @@ class OxfordDictionariesTranslationsTest {
 
     @Test
     void testTranslationsParse1() {
-        InputStream resource = OxfordDictionaryParser.class.getClassLoader().getResourceAsStream("oxfordapi/translation_result1.json")
+        InputStream resource = ODParser.class.getClassLoader().getResourceAsStream("oxfordapi/translation_result1.json")
         def json = IOUtils.toString(resource, "UTF-8")
-        def parser = new OxfordDictionaryParser("ace")
+        def parser = new ODParser("ace")
         parser.parse(json)
         def results = parser.getResults()
         def result = results.get(0)

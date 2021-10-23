@@ -26,7 +26,7 @@ import org.omegat.core.events.IProjectEventListener;
 import org.omegat.gui.preferences.PreferencesControllers;
 import org.omegat.util.Language;
 import org.omegat.util.Log;
-import org.omegat.util.Preferences;
+import tokyo.northside.omegat.preferences.OxfordPreferencesController;
 
 
 public final class OxfordDictionaryPlugin {

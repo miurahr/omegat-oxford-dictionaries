@@ -1,4 +1,4 @@
-package tokyo.northside.omegat.oxford;
+package tokyo.northside.omegat.preferences;
 
 import javafx.scene.control.CheckBox;
 
