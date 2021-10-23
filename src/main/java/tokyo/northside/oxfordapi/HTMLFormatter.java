@@ -24,16 +24,9 @@ public class HTMLFormatter {
 
     public static DictionaryEntry formatDefinitions(final LexicalEntry lexicalEntry) {
         String title = lexicalEntry.getText();
-        StringBuilder sb = new StringBuilder();
+        String category = lexicalEntry.getLexicalCategory().getText();
+        StringBuilder sb = new StringBuilder("[").append(category).append("]&nbsp;");
         for (Entry entry : lexicalEntry.getEntries()) {
-            List<String> et = entry.getEtymologies();
-            if (et != null) {
-                sb.append("<span>");
-                for (String etymology : et) {
-                    sb.append(etymology);
-                }
-                sb.append("</span>");
-            }
             List<Pronunciation> pronunciations = entry.getPronunciations();
             if (pronunciations != null) {
                 sb.append("<span>");
@@ -45,6 +38,14 @@ public class HTMLFormatter {
                     if (pron.getAudioFile() != null) {
                         sb.append("</a>");
                     }
+                }
+                sb.append("</span>&nbsp;");
+            }
+            List<String> etymologies = entry.getEtymologies();
+            if (etymologies != null) {
+                sb.append("<span>");
+                for (String etymology : etymologies) {
+                    sb.append(etymology);
                 }
                 sb.append("</span>");
             }
