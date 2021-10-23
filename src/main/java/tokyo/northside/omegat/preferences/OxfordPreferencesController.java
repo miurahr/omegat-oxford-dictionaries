@@ -74,8 +74,13 @@ public class OxfordPreferencesController extends BasePreferencesController {
     @Override
     protected void initFromPrefs() {
         panel.enableOption.setSelected(isEnabled());
-        panel.queryMonolingual.setSelected(isMonolingual());
-        panel.queryBilingual.setSelected(isBilingual());
+        if (isMonolingual() && isBilingual()) {
+            panel.queryBoth.setSelected(true);
+        } else if (isBilingual()) {
+            panel.queryBilingual.setSelected(true);
+        } else {
+            panel.queryMonolingual.setSelected(true);
+        }
         panel.appIdField.setText(getCredential(OPTION_OXFORD_APPID));
         panel.appKeyField.setText(getCredential(OPTION_OXFORD_APPKEY));
         setState();
@@ -98,8 +103,13 @@ public class OxfordPreferencesController extends BasePreferencesController {
     @Override
     public void persist() {
         Preferences.setPreference(OPTION_OXFORD_ENABLED, panel.enableOption.isSelected());
-        Preferences.setPreference(OPTION_OXFORD_MONO, panel.queryMonolingual.isSelected());
-        Preferences.setPreference(OPTION_OXFORD_BILINGUAL, panel.queryBilingual.isSelected());
+        if (panel.queryBoth.isSelected()) {
+            Preferences.setPreference(OPTION_OXFORD_MONO, true);
+            Preferences.setPreference(OPTION_OXFORD_BILINGUAL, true);
+        } else {
+            Preferences.setPreference(OPTION_OXFORD_MONO, panel.queryMonolingual.isSelected());
+            Preferences.setPreference(OPTION_OXFORD_BILINGUAL, panel.queryBilingual.isSelected());
+        }
         setCredential(OPTION_OXFORD_APPID, panel.appIdField.getText());
         setCredential(OPTION_OXFORD_APPKEY, panel.appKeyField.getText());
         setRestartRequired(true);
@@ -111,7 +121,6 @@ public class OxfordPreferencesController extends BasePreferencesController {
         panel.appIdField.setEnabled(false);
         panel.appKeyField.setEnabled(false);
         panel.queryMonolingual.setSelected(true);
-        panel.queryBilingual.setSelected(false);
         setState();
     }
 

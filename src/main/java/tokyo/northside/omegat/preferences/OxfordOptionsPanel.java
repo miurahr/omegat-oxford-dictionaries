@@ -11,8 +11,10 @@ public class OxfordOptionsPanel extends JPanel {
     JTextField appIdField;
     JTextField appKeyField;
     JCheckBox enableOption;
-    JCheckBox queryMonolingual;
-    JCheckBox queryBilingual;
+    JRadioButton queryMonolingual;
+    JRadioButton queryBilingual;
+    JRadioButton queryBoth;
+    ButtonGroup buttonGroup;
 
     public OxfordOptionsPanel() {
         initGui();
@@ -55,8 +57,13 @@ public class OxfordOptionsPanel extends JPanel {
         JPanel keyPanel = new JPanel();
         JPanel queryPanel = new JPanel();
         enableOption = new JCheckBox("Enable Oxford Dictionaries");
-        queryMonolingual = new JCheckBox("Query monolingual dicitionary");
-        queryBilingual = new JCheckBox("Query bilingual dictionary");
+        queryMonolingual = new JRadioButton("Query monolingual dictionary");
+        queryBilingual = new JRadioButton("Query bilingual dictionary");
+        queryBoth = new JRadioButton("Query both mono/bi-ligual dictionary");
+        buttonGroup = new ButtonGroup();
+        buttonGroup.add(queryMonolingual);
+        buttonGroup.add(queryBilingual);
+        buttonGroup.add(queryBoth);
         appIdField = new JTextField();
         appKeyField = new JTextField();
         appIdField.setPreferredSize(new Dimension(300,30));
@@ -78,6 +85,7 @@ public class OxfordOptionsPanel extends JPanel {
         queryPanel.setLayout(new BoxLayout(queryPanel, BoxLayout.PAGE_AXIS));
         queryPanel.add(queryMonolingual);
         queryPanel.add(queryBilingual);
+        queryPanel.add(queryBoth);
         queryPanel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
         add(cbPanel);
         add(idPanel);
