@@ -102,6 +102,7 @@ public class OxfordPreferencesController extends BasePreferencesController {
         Preferences.setPreference(OPTION_OXFORD_BILINGUAL, panel.queryBilingual.isSelected());
         setCredential(OPTION_OXFORD_APPID, panel.appIdField.getText());
         setCredential(OPTION_OXFORD_APPKEY, panel.appKeyField.getText());
+        setRestartRequired(true);
     }
 
     @Override
