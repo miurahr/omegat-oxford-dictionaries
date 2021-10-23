@@ -1,5 +1,8 @@
 package tokyo.northside.oxfordapi
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.commons.io.IOUtils
 import org.junit.Test
 import tokyo.northside.oxfordapi.dtd.Result
@@ -11,11 +14,12 @@ class OxfordDictionaryEntriesTest {
     void testParse1() {
         InputStream resource = ODParser.class.getClassLoader().getResourceAsStream("oxfordapi/entry_result1.json")
         String json = IOUtils.toString(resource, "UTF-8")
-        ODParser parser = new ODParser("ace")
-        parser.parse(json)
-        List<Result> result = parser.getResults()
-        Result entry = result.get(0)
-        assertEquals("ace", entry.getId())
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(json);
+        node = node.get("results");
+        def results = mapper.readValue(node.traverse(), new TypeReference<List<Result>>() {});
+        Result result = results.get(0)
+        assertEquals("ace", result.getId())
 
     }
 
