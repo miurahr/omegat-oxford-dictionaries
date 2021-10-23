@@ -1,0 +1,14 @@
+<FindBugsFilter>
+    <Match>
+        <Package name="~tokyo\.northside\.omegat\.preferences"/>
+        <Bug pattern="EI_EXPOSE_REP, EI_EXPOSE_REP2" />
+    </Match>
+    <Match>
+        <Package name="~tokyo\.northside\.oxfordapi\.dtd"/>
+        <Bug pattern="EI_EXPOSE_REP, EI_EXPOSE_REP2" />
+    </Match>
+    <Match>
+        <Package name="~tokyo\.northside\.oxfordapi"/>
+        <Bug pattern="EI_EXPOSE_REP, EI_EXPOSE_REP2" />
+    </Match>
+</FindBugsFilter>
