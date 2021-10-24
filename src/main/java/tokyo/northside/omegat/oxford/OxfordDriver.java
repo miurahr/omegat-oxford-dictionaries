@@ -5,7 +5,7 @@ import org.omegat.core.dictionaries.IDictionary;
 import org.omegat.util.Language;
 import tokyo.northside.omegat.preferences.OxfordPreferencesController;
 import tokyo.northside.oxfordapi.OxfordClient;
-import tokyo.northside.oxfordapi.OxfordClient.OxfordClientException;
+import tokyo.northside.oxfordapi.OxfordClientException;
 import tokyo.northside.oxfordapi.dtd.LexicalEntry;
 import tokyo.northside.oxfordapi.dtd.Result;
 
