@@ -29,12 +29,12 @@ repositories {
 }
 
 omegat {
-    version = "5.7.0"
+    version = "5.8.0"
     pluginClass = "tokyo.northside.omegat.oxford.OxfordDictionaryPlugin"
 }
 
 dependencies {
-    packIntoJar("tokyo.northside:java-oxford-dictionaries:0.2.0")
+    packIntoJar("tokyo.northside:java-oxford-dictionaries:0.3.1")
 }
 
 spotbugs {

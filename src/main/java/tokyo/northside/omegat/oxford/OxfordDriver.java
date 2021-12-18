@@ -3,31 +3,29 @@ package tokyo.northside.omegat.oxford;
 import org.omegat.core.dictionaries.DictionaryEntry;
 import org.omegat.core.dictionaries.IDictionary;
 import org.omegat.util.Language;
+import org.omegat.util.Log;
 import tokyo.northside.omegat.preferences.OxfordPreferencesController;
-import tokyo.northside.oxfordapi.OxfordClient;
+import tokyo.northside.oxfordapi.IOxfordClient;
+import tokyo.northside.oxfordapi.OxfordThreadClient;
 import tokyo.northside.oxfordapi.OxfordClientException;
-import tokyo.northside.oxfordapi.dtd.LexicalEntry;
-import tokyo.northside.oxfordapi.dtd.Result;
+import tokyo.northside.oxfordapi.OxfordDictionaryEntry;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class OxfordDriver implements IDictionary {
 
-    private static final String ENDPOINT_URL = "https://od-api.oxforddictionaries.com/api/v2/";
     private final Language source;
     private final Language target;
-    private final OxfordClient searcher;
-    private final Map<String, List<DictionaryEntry>> cache = new HashMap<>();
+    private final IOxfordClient searcher;
 
     public OxfordDriver(final Language source, final Language target) {
         this.source = source;
         this.target = target;
-        searcher = new OxfordClient(OxfordPreferencesController.getAppId(),
-                OxfordPreferencesController.getAppKey(), ENDPOINT_URL);
+        searcher = new OxfordThreadClient(OxfordPreferencesController.getAppId(),
+                OxfordPreferencesController.getAppKey());
     }
 
     /**
@@ -38,7 +36,7 @@ public class OxfordDriver implements IDictionary {
      */
     @Override
     public List<DictionaryEntry> readArticles(final String word) {
-        return queryArticle(word, true);
+        return queryArticles(Collections.singletonList(word), true);
     }
 
     /**
@@ -50,47 +48,46 @@ public class OxfordDriver implements IDictionary {
      */
     @Override
     public List<DictionaryEntry> readArticlesPredictive(final String word) {
-        return queryArticle(word, false);
+        return queryArticles(Collections.singletonList(word), false);
     }
 
-    private List<DictionaryEntry> queryArticle(final String word, final boolean strict) {
-        if (!cache.containsKey(word)) {
-            List<DictionaryEntry> dictionaryEntries = new ArrayList<>();
-            if (OxfordPreferencesController.isMonolingual()) {
-                String language = source.getLanguageCode();
-                try {
-                    for (Result result: searcher.getEntries(word, language, strict)) {
-                        for (LexicalEntry lexicalEntry : result.getLexicalEntries()) {
-                            dictionaryEntries.add(HTMLFormatter.formatDefinitions(lexicalEntry));
-                        }
-                    }
-                } catch (OxfordClientException oce) {
-                    // when got connection/query error, return without any content.
-                    return Collections.emptyList();
+    @Override
+    public List<DictionaryEntry> retrieveArticles(final Collection<String> words) {
+        return queryArticles(words, true);
+    }
+
+    @Override
+    public List<DictionaryEntry> retrieveArticlesPredictive(final Collection<String> words) {
+        return queryArticles(words, false);
+    }
+
+    private List<DictionaryEntry> queryArticles(final Collection<String> words, final boolean strict) {
+        List<DictionaryEntry> dictionaryEntries = new ArrayList<>();
+        if (OxfordPreferencesController.isMonolingual()) {
+            try {
+                for (OxfordDictionaryEntry en : searcher.getDefinitions(words,
+                        source.getLanguageCode(), strict)) {
+                    dictionaryEntries.add(new DictionaryEntry(en.getQuery(), en.getWord(), en.getArticle()));
                 }
+            } catch (OxfordClientException e) {
+                Log.log(e);
             }
-            if (OxfordPreferencesController.isBilingual()) {
-                String sourceLang = source.getLanguageCode();
-                String targetLang = target.getLanguageCode();
-                try {
-                    for (Result result : searcher.getTranslations(word, sourceLang, targetLang)) {
-                        for (LexicalEntry lexicalEntry : result.getLexicalEntries()) {
-                            dictionaryEntries.add(HTMLFormatter.formatTranslations(lexicalEntry));
-                        }
-                    }
-                } catch (OxfordClientException ignored) {
-                }
-                if (dictionaryEntries.isEmpty()) {
-                    return Collections.emptyList();
-                }
-            }
-            cache.put(word, dictionaryEntries);
         }
-        return cache.get(word);
+        if (OxfordPreferencesController.isBilingual()) {
+            try {
+                for (OxfordDictionaryEntry en : searcher.getTranslations(words,
+                        source.getLanguageCode(), target.getLanguageCode())) {
+                    dictionaryEntries.add(new DictionaryEntry(en.getQuery(), en.getWord(), en.getArticle()));
+                }
+            } catch (OxfordClientException e) {
+                Log.log(e);
+            }
+        }
+        return dictionaryEntries;
     }
-
 
     @Override
     public void close() {
+        searcher.close();
     }
 }
