@@ -18,9 +18,11 @@ if (getVersionDetails().isCleanTag) {
 }
 
 group = "tokyo.northside"
-configure<JavaPluginConvention> {
+java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+    withJavadocJar()
 }
 
 repositories {
@@ -41,39 +43,31 @@ spotbugs {
     excludeFilter.set(project.file("config/spotbugs/exclude.xml"))
     tasks.spotbugsMain {
         reports.create("html") {
-            isEnabled = true
+            required.set(true)
         }
     }
     tasks.spotbugsTest {
         reports.create("html") {
-            isEnabled = true
+            required.set(true)
         }
     }
 }
 
-tasks {
-    "jacocoTestReport"(JacocoReport::class) {
-        reports {
-            // To be read by humans
-            html.isEnabled = true
-            // To be read by Coveralls etc.
-            xml.isEnabled = true
-            xml.destination = file("$buildDir/reports/jacoco/test/jacocoTestReport.xml")
-        }
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
     }
+}
 
-    // Trying to run tests every time.
-    val test by tasks
-    val cleanTest by tasks
-    test.dependsOn(cleanTest)
+tasks.getByName<Test>("test") {
+    useJUnitPlatform()
+}
 
-    // Use the built-in JUnit support of Gradle.
-    "test"(Test::class) {
-        useJUnitPlatform()
-    }
-
-    // Sorry, I have no idea.
-    Unit
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-Xlint:deprecation")
+    options.compilerArgs.add("-Xlint:unchecked")
 }
 
 distributions {
