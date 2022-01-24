@@ -3,7 +3,7 @@ plugins {
     checkstyle
     jacoco
     distribution
-    id("com.github.spotbugs") version "5.0.4"
+    id("com.github.spotbugs") version "5.0.5"
     id("com.diffplug.spotless") version "6.2.0"
     id("org.omegat.gradle") version "1.5.7"
     id("com.palantir.git-version") version "0.12.3"
