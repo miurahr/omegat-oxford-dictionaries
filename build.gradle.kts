@@ -36,7 +36,7 @@ omegat {
 }
 
 dependencies {
-    packIntoJar("tokyo.northside:java-oxford-dictionaries:0.3.1")
+    packIntoJar("tokyo.northside:java-oxford-dictionaries:0.4.0")
 }
 
 spotbugs {
