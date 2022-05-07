@@ -13,7 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-@SuppressWarnings("visibilitymodifier")
+@SuppressWarnings({"visibilitymodifier", "serial"})
 public class OxfordOptionsPanel extends JPanel {
     JTextField appIdField;
     JTextField appKeyField;
