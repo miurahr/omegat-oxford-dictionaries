@@ -32,3 +32,8 @@ To use the plugin, you should enable plugin and set credentials in preferences -
 
 ![dictionary configuration recommend](https://raw.githubusercontent.com/miurahr/omegat-oxford-dictionaries/main/docs/images/gui_preferences_plugins_oxford.png)
 
+### Search specific word
+
+You can search word with modal dialog with selecting word.
+
+![modal search command](docs/images/modal_dialog_search.png)
