@@ -5,7 +5,7 @@ plugins {
     distribution
     id("com.github.spotbugs") version "5.0.7"
     id("com.diffplug.spotless") version "6.8.0"
-    id("org.omegat.gradle") version "1.5.7"
+    id("org.omegat.gradle") version "1.5.11"
     id("com.palantir.git-version") version "0.13.0"
 }
 
