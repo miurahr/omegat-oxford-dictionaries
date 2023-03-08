@@ -6,7 +6,7 @@ plugins {
     id("com.github.spotbugs") version "5.0.7"
     id("com.diffplug.spotless") version "6.8.0"
     id("org.omegat.gradle") version "1.5.7"
-    id("com.palantir.git-version") version "0.13.0"
+    id("com.palantir.git-version") version "2.0.0"
 }
 
 // calculate version string from git tag, hash and commit distance
